@@ -111,4 +111,8 @@ bot_2 = Client(
 start_forwarding(bot_1)  # Bot 1: Forwarding links to the destination channel
 start_bot_2(bot_2)      # Bot 2: Copy and paste to the group
 
+# Run both bots explicitly
+bot_1.run()  # Ensure bot 1 is running
+bot_2.run()  # Ensure bot 2 is running
+
 logger.info("Both bots started and running.")
