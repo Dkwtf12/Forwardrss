@@ -70,16 +70,48 @@ def start_forwarding(app: Client):
 
     logger.info("Forwarding setup complete with /l, /ql3, and /ql2 formats.")
 
+def start_bot_2(app: Client):
+    @app.on_message(filters.chat(config.DEST_CHAT_ID))
+    async def copy_and_paste_to_group(client, message):
+        try:
+            text = message.text or message.caption
+            logger.info(f"Received message from destination channel: {text}")
+
+            if not text:
+                logger.warning("Message has no text or caption.")
+                return
+
+            # Forward message to group (TARGET_GROUP_ID)
+            await client.send_message(config.TARGET_GROUP_ID, text)
+            logger.info(f"Message copied and pasted to the group: {text}")
+
+        except Exception as e:
+            logger.exception(f"Error occurred while copying and pasting message to group: {e}")
+
+    logger.info("Bot 2 setup complete for copying and pasting messages.")
+
 # Start the bot
 if __name__ == "__main__":
-    bot = Client(
-        "bot",
+    bot_1 = Client(
+        "bot_1",
         api_id=config.API_ID,
         api_hash=config.API_HASH,
-        bot_token=config.BOT_TOKEN,
+        bot_token=config.BOT_TOKEN_1,
         workers=config.TG_WORKERS
     )
 
-    start_forwarding(bot)
-    logger.info("Starting bot...")
-    bot.run()
+    bot_2 = Client(
+        "bot_2",
+        api_id=config.API_ID,
+        api_hash=config.API_HASH,
+        bot_token=config.BOT_TOKEN_2,
+        workers=config.TG_WORKERS
+    )
+
+    # Start both bots
+    start_forwarding(bot_1)  # Bot 1: Forwarding links to the destination channel
+    start_bot_2(bot_2)      # Bot 2: Copy and paste to the group
+
+    logger.info("Starting bots...")
+    bot_1.run()  # Run Bot 1
+    bot_2.run()  # Run Bot 2
