@@ -3,6 +3,7 @@ from pyrogram import Client, filters
 import re
 import config
 import os
+from pyrogram.types import Message
 from pyrogram.enums import ParseMode
 from flask import Flask
 import threading
