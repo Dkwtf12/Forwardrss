@@ -1,7 +1,7 @@
 import os
 
 # Telegram API credentials
-API_ID = os.environ("19977673"))
+API_ID = os.environ("19977673")
 API_HASH = os.environ("f75386c7aab88e2ad9b5de220fc0ceb4")
 
 # Bot token for the forwarding bot
