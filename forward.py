@@ -29,7 +29,7 @@ threading.Thread(target=run_flask, daemon=True).start()
 # Regex patterns
 GOFILE_PATTERN = re.compile(r"https?://(?:www\.)?gofile\.io/\S+")
 MILKIE_PATTERN = re.compile(r"https?://milkie\.cc/api/v1/torrents/\S+")
-MAGNET_PATTERN = re.compile(r"magnet:\?xt=urn:btih:[a-zA-Z0-9]+")
+MAGNET_PATTERN = re.compile(r"magnet:\?xt=urn:btih:[a-zA-Z0-9]+[^\s]*")
 
 def start_forwarding(app: Client):
     @app.on_message(filters.chat(config.SOURCE_CHAT_ID))
