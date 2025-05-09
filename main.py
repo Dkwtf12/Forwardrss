@@ -1,10 +1,10 @@
+import asyncio
 from forward import bot_1, userbot
 
-if __name__ == "__main__":
-    print("Bot 1 (forward) and Userbot (copy-paste) are running...")
-    
-    # Start Bot 1 for forwarding
-    bot_1.run()  
+async def main():
+    await asyncio.gather(bot_1.start(), userbot.start())
+    print("Both bots started.")
+    await asyncio.Event().wait()  # Keeps the script alive
 
-    # Start Userbot for copying messages to the group
-    userbot.run()
+if __name__ == "__main__":
+    asyncio.run(main())
