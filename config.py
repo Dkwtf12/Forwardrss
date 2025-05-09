@@ -1,14 +1,13 @@
 import os
 
 # Telegram API credentials
-API_ID = os.environ.get("19977673")
-API_HASH = os.environ.get("f75386c7aab88e2ad9b5de220fc0ceb4")
+API_ID = os.environ.get("28737520")
+API_HASH = os.environ.get("c23aef82a6c369b5791cf0529d3fc090")
 
 # Bot token for the forwarding bot
-BOT_TOKEN_1 = os.environ.get("5044558270:AAETnUGHgVriS9y_b5ImSC2qOeuRuBLkTp4")
-
-# Session string for the userbot (exported from Pyrogram)
-SESSION_STRING = os.environ.get("1BVtsOMQBuwYQZwy0vUwa8fBStV8VW6muYLqSR3egK8UGBWhJc1MoGTqWgOYxlA8zKvBu71QNFdL0Zqr98OmdLMyxDHvblyIQYBk9ubR7xJHJXjSdL8RgO__hi1TquqArpCWyVk2YcLWbF-mJXur_9jh5o3Dn_F6hWT7bCw4usPDXActluxyZQuymiWfZvsT6pnLTRYjfaMv6fWgQkebMd6Bpc7eXNo7oFrXVJund06MR8cLqVa6KHws-SA5Gvli9CPi9xO2O4aNrXJhZ5dNSTJ9xwAX-HlWpvq31OZ4h4t9048szjXahps0Pbp8BnQVLgSCQ-ssoDUGsM1vV__840Rq_LywFR70=")
+BOT_TOKEN_1 = os.environ.get("5044558270:AAETnUGHgVriS9y_b5ImSCqOeuRuBLkTp4")
+# Session string for the userbot (exprte from Pyrogram)
+SESSION_STRING = os.environ.get("BQG2f_AAonTtp3hsBwMPAbyPuazoZT_86fa5w3eYdovrxGfa5OhrNWxFg9JAIevW4WwVX__InfWMr9krySUOfHQHxvDxHmGBAE5X1qZj7O1NnK_0rpSUGJTFTJitrU0vjG2ogek0ROp1EN9JPktlpY-5JCySoehJbMwolTe0IMY4hU58Kcd6vC9HLUbLv8cNfXAi-SbVZVls2Jt_RsHBIFElTAGYfdnNEmRSIsaJuWsTwmq3bXNuhsqHNntaPl2naP7b3Z88qZspBfN0KzCNVpSz3OsdUvo-_1YCJpygjW6-qefTeeykbrPE-tLGnN5vc0FqG_NbsKJ8Mbds7EupWBxWyV1Y0AAAAAGnwwoiAA")
 
 
 # Chat IDs (use integers). SOURCE_CHAT_ID is the channel to watch, DEST_CHAT_ID is where bot will send.
