@@ -52,48 +52,67 @@ def start_forwarding(app: Client):
 
             for link in gofile_links:
                 formatted = f"/l {link}\n<b>Tag:</b> <code>@{config.TAG_USERNAME}</code> <code>{config.USER_ID}</code>"
+                logger.info(f"Sending Gofile link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted, parse_mode=ParseMode.HTML)
 
             for link in milkie_links:
                 formatted = f"/ql3 {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                logger.info(f"Sending Milkie link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted)
 
             for link in magnet_links:
                 formatted = f"/ql2 {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                logger.info(f"Sending Magnet link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted)
 
         except Exception as e:
             logger.exception(f"Error while forwarding links: {e}")
 
-    logger.info("Forwarding setup complete.")
+    logger.info("Forwarding setup complete with /l, /ql3, and /ql2 formats.")
 
-def start_bot_2(app: Client):
-    @app.on_message(filters.chat(config.DEST_CHAT_ID))
+def start_bot_2():
+    # Userbot using session string
+    bot_2 = Client(
+        "userbot",  # Session name
+        session_string=config.SESSION_STRING,  # Use the session string here
+        api_id=config.API_ID,
+        api_hash=config.API_HASH,
+        workers=config.TG_WORKERS
+    )
+
+    @bot_2.on_message(filters.chat(config.DEST_CHAT_ID))
     async def copy_and_paste_to_group(client, message):
         try:
             text = message.text or message.caption
+            logger.info(f"Received message from destination channel: {text}")
+
             if not text:
+                logger.warning("Message has no text or caption.")
                 return
+
+            # Forward message to group (TARGET_GROUP_ID)
             await client.send_message(config.TARGET_GROUP_ID, text)
-            logger.info(f"Pasted to group: {text}")
+            logger.info(f"Message copied and pasted to the group: {text}")
+
         except Exception as e:
-            logger.exception(f"Error copying to group: {e}")
+            logger.exception(f"Error occurred while copying and pasting message to group: {e}")
 
-    logger.info("Bot 2 setup complete.")
+    logger.info("Bot 2 setup complete for copying and pasting messages.")
+    bot_2.run()
 
-# Initialize clients (needed for main.py to import)
-bot_1 = Client(
-    "bot_1",
-    api_id=config.API_ID,
-    api_hash=config.API_HASH,
-    bot_token=config.BOT_TOKEN_1,
-    workers=config.TG_WORKERS
-)
+# Start the bot
+if __name__ == "__main__":
+    bot_1 = Client(
+        "bot_1",
+        api_id=config.API_ID,
+        api_hash=config.API_HASH,
+        bot_token=config.BOT_TOKEN_1,
+        workers=config.TG_WORKERS
+    )
 
-bot_2 = Client(
-    "bot_2",
-    api_id=config.API_ID,
-    api_hash=config.API_HASH,
-    bot_token=config.BOT_TOKEN_2,
-    workers=config.TG_WORKERS
-) 
+    # Start both bots
+    start_forwarding(bot_1)  # Bot 1: Forwarding links to the destination channel
+    start_bot_2()           # Bot 2: Userbot login to copy and paste to the group
+
+    logger.info("Starting bots...")
+    bot_1.run()  # Run Bot 1
