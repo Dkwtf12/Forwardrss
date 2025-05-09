@@ -56,12 +56,12 @@ def start_forwarding(app: Client):
                 await client.send_message(config.DEST_CHAT_ID, formatted, parse_mode=ParseMode.HTML)
 
             for link in milkie_links:
-                formatted = f"/ql3 {link} -ff metadata -up {config.DEST_CHAT_ID}\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                formatted = f"/ql3 {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
                 logger.info(f"Sending Milkie link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted)
 
             for link in magnet_links:
-                formatted = f"/ql2 {link} -ff metadata -up {config.DEST_CHAT_ID}\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                formatted = f"/ql2 {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
                 logger.info(f"Sending Magnet link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted)
 
