@@ -1,4 +1,3 @@
-pyrogram
-git+https://github.com/xkunal01/pyrofork-old
+pyrogram==2.0.106
 tgcrypto
 flask
