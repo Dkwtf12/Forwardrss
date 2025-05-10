@@ -68,7 +68,7 @@ def start_forwarding(app: Client):
         except Exception as e:
             logger.exception(f"Error while forwarding links: {e}")
 
-    logger.info("Forwarding setup complete with /l, /ql3, and /ql2 formats.")
+    logger.info("Forwarding setup complete with /l, /ql, and /ql formats.")
 
 # Start the bot
 if name == "main":
