@@ -1,24 +1,13 @@
-import asyncio
-import logging
-from pyrogram import idle
-from forward import bot_1, userbot
+import os
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+API_ID = int(os.getenv("API_ID", "19977673"))
+API_HASH = os.getenv("API_HASH", "f75386c7aab88e2ad9b5de220fc0ceb4")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "5044558270:AAETnUGHgVriS9y_b5ImSC2qOeuRuBLkTp4")
 
-async def main():
-    logger.info("Starting Telegram clients (bot and userbot)...")
-    await bot_1.start()
-    await userbot.start()
+SOURCE_CHAT_ID = int(os.getenv("SOURCE_CHAT_ID", "-1002440398569"))
+DEST_CHAT_ID = int(os.getenv("DEST_CHAT_ID", "-1002477240145"))
 
-    await idle()
+TAG_USERNAME = os.getenv("TAG_USERNAME", "zsbhere")
+USER_ID = int(os.getenv("USER_ID", "1568895149"))
 
-    await bot_1.stop()
-    await userbot.stop()
-    logger.info("Telegram clients stopped.")
-
-if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except Exception as e:
-        logger.error(f"Error in main(): {e}")
+TG_WORKERS = int(os.getenv("TG_WORKERS", "4"))
