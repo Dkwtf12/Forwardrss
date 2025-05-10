@@ -1,43 +1,85 @@
 import logging
-import re
 from pyrogram import Client, filters
+import re
+import config
 from pyrogram.enums import ParseMode
-from pyrogram.types import Message
-from config import SOURCE_CHAT_ID, DEST_CHAT_ID, USER_ID
+from flask import Flask
+import threading
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Userbot
-userbot = Client(
-    "userbot",
-    api_id=int(os.environ["API_ID"]),
-    api_hash=os.environ["API_HASH"],
-    in_memory=True
+# Setup logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
 )
+logger = logging.getLogger(name)
 
-# Bot
-bot_1 = Client(
-    "bot_1",
-    api_id=int(os.environ["API_ID"]),
-    api_hash=os.environ["API_HASH"],
-    bot_token=os.environ["BOT_TOKEN_1"],
-    in_memory=True
-)
+# Flask app for Heroku uptime ping
+app = Flask(name)
 
-# Regex pattern to detect specific link types
-link_pattern = re.compile(r"(https?://t\.me/\S+|https?://telegram\.me/\S+)", re.IGNORECASE)
+@app.route('/')
+def home():
+    return "Bot is running!"
 
-@userbot.on_message(filters.chat(SOURCE_CHAT_ID) & filters.text)
-async def catch_and_forward(client: Client, message: Message):
-    # If a link is found, forward the message via bot
-    if link_pattern.search(message.text):
+def run_flask():
+    app.run(host="0.0.0.0", port=8080)
+
+# Start Flask in background
+threading.Thread(target=run_flask, daemon=True).start()
+
+# Regex patterns
+GOFILE_PATTERN = re.compile(r"https?://(?:www\.)?gofile\.io/\S+")
+MILKIE_PATTERN = re.compile(r"https?://milkie\.cc/api/v1/torrents/\S+")
+MAGNET_PATTERN = re.compile(r"magnet:\?xt=urn:btih:[a-zA-Z0-9]+[^\s]*")
+
+def start_forwarding(app: Client):
+    @app.on_message(filters.chat(config.SOURCE_CHAT_ID))
+    async def forward_links(client, message):
         try:
-            await bot_1.send_message(
-                chat_id=DEST_CHAT_ID,
-                text=message.text,
-                parse_mode=ParseMode.HTML
-            )
-            logger.info(f"Forwarded message from {SOURCE_CHAT_ID} to {DEST_CHAT_ID}")
+            text = message.text or message.caption
+            logger.info(f"Received message: {text}")
+
+            if not text:
+                logger.warning("Message has no text or caption.")
+                return
+
+            gofile_links = GOFILE_PATTERN.findall(text)
+            milkie_links = MILKIE_PATTERN.findall(text)
+            magnet_links = MAGNET_PATTERN.findall(text)
+
+            if not (gofile_links or milkie_links or magnet_links):
+                logger.info("No matching links found in message.")
+                return
+
+            for link in gofile_links:
+                formatted = f"/l {link}\n<b>Tag:</b> <code>@{config.TAG_USERNAME}</code> <code>{config.USER_ID}</code>"
+                logger.info(f"Sending Gofile link: {formatted}")
+                await client.send_message(config.DEST_CHAT_ID, formatted, parse_mode=ParseMode.HTML)
+
+            for link in milkie_links:
+                formatted = f"/ql {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                logger.info(f"Sending Milkie link: {formatted}")
+                await client.send_message(config.DEST_CHAT_ID, formatted)
+
+            for link in magnet_links:
+                formatted = f"/ql {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                logger.info(f"Sending Magnet link: {formatted}")
+                await client.send_message(config.DEST_CHAT_ID, formatted)
+
         except Exception as e:
-            logger.error(f"Failed to forward message: {e}")
+            logger.exception(f"Error while forwarding links: {e}")
+
+    logger.info("Forwarding setup complete with /l, /ql3, and /ql2 formats.")
+
+# Start the bot
+if name == "main":
+    bot = Client(
+        "bot",
+        api_id=config.API_ID,
+        api_hash=config.API_HASH,
+        bot_token=config.BOT_TOKEN,
+        workers=config.TG_WORKERS
+    )
+
+    start_forwarding(bot)
+    logger.info("Starting bot...")
+    bot.run()
