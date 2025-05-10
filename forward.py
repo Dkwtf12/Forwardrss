@@ -11,10 +11,10 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
-logger = logging.getLogger(name)
+logger = logging.getLogger(__name__)  # Fixed here
 
 # Flask app for Heroku uptime ping
-app = Flask(name)
+app = Flask(__name__)  # Fixed here
 
 @app.route('/')
 def home():
@@ -71,7 +71,7 @@ def start_forwarding(app: Client):
     logger.info("Forwarding setup complete with /l, /ql, and /ql formats.")
 
 # Start the bot
-if name == "main":
+if __name__ == "__main__":  # Fixed here
     bot = Client(
         "bot",
         api_id=config.API_ID,
