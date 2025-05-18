@@ -11,10 +11,10 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
-logger = logging.getLogger(__name__)  # Fixed here
+logger = logging.getLogger(__name__)
 
 # Flask app for Heroku uptime ping
-app = Flask(__name__)  # Fixed here
+app = Flask(__name__)
 
 @app.route('/')
 def home():
@@ -30,6 +30,8 @@ threading.Thread(target=run_flask, daemon=True).start()
 GOFILE_PATTERN = re.compile(r"https?://(?:www\.)?gofile\.io/\S+")
 MILKIE_PATTERN = re.compile(r"https?://milkie\.cc/api/v1/torrents/\S+")
 MAGNET_PATTERN = re.compile(r"magnet:\?xt=urn:btih:[a-zA-Z0-9]+[^\s]*")
+NYAA_PATTERN = re.compile(r"https?://nyaa\.si/download/\S+\.torrent")
+YTS_PATTERN = re.compile(r"https?://yts\.mx/torrent/download/\S+")
 
 def start_forwarding(app: Client):
     @app.on_message(filters.chat(config.SOURCE_CHAT_ID))
@@ -45,8 +47,10 @@ def start_forwarding(app: Client):
             gofile_links = GOFILE_PATTERN.findall(text)
             milkie_links = MILKIE_PATTERN.findall(text)
             magnet_links = MAGNET_PATTERN.findall(text)
+            nyaa_links = NYAA_PATTERN.findall(text)
+            yts_links = YTS_PATTERN.findall(text)
 
-            if not (gofile_links or milkie_links or magnet_links):
+            if not (gofile_links or milkie_links or magnet_links or nyaa_links or yts_links):
                 logger.info("No matching links found in message.")
                 return
 
@@ -65,13 +69,23 @@ def start_forwarding(app: Client):
                 logger.info(f"Sending Magnet link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted)
 
+            for link in nyaa_links:
+                formatted = f"/ql2 {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                logger.info(f"Sending NYAA link: {formatted}")
+                await client.send_message(config.DEST_CHAT_ID, formatted)
+
+            for link in yts_links:
+                formatted = f"/ql4 {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                logger.info(f"Sending YTS link: {formatted}")
+                await client.send_message(config.DEST_CHAT_ID, formatted)
+
         except Exception as e:
             logger.exception(f"Error while forwarding links: {e}")
 
     logger.info("Forwarding setup complete with /l, /ql, and /ql formats.")
 
 # Start the bot
-if __name__ == "__main__":  # Fixed here
+if __name__ == "__main__":
     bot = Client(
         "bot",
         api_id=config.API_ID,
