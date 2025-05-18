@@ -51,17 +51,17 @@ def start_forwarding(app: Client):
                 return
 
             for link in gofile_links:
-                formatted = f"/l {link}\n<b>Tag:</b> <code>@{config.TAG_USERNAME}</code> <code>{config.USER_ID}</code>"
+                formatted = f"/l2 {link}\n<b>Tag:</b> <code>@{config.TAG_USERNAME}</code> <code>{config.USER_ID}</code>"
                 logger.info(f"Sending Gofile link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted, parse_mode=ParseMode.HTML)
 
             for link in milkie_links:
-                formatted = f"/ql {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                formatted = f"/ql2 {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
                 logger.info(f"Sending Milkie link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted)
 
             for link in magnet_links:
-                formatted = f"/ql {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                formatted = f"/ql4 {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
                 logger.info(f"Sending Magnet link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted)
 
