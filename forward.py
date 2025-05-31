@@ -32,7 +32,8 @@ MILKIE_PATTERN = re.compile(r"https?://milkie\.cc/api/v1/torrents/\S+")
 MAGNET_PATTERN = re.compile(r"magnet:\?xt=urn:btih:[a-zA-Z0-9]+[^\s]*")
 NYAA_PATTERN = re.compile(r"https?://nyaa\.si/download/\S+\.torrent")
 YTS_PATTERN = re.compile(r"https?://yts\.mx/torrent/download/\S+")
-
+TMVCLOUD_PATTERN = re.compile(r"https://cloudserver-1\.tmbcloud\.pro/[A-Z0-9]+")
+                              
 def start_forwarding(app: Client):
     @app.on_message(filters.chat(config.SOURCE_CHAT_ID))
     async def forward_links(client, message):
@@ -49,7 +50,8 @@ def start_forwarding(app: Client):
             magnet_links = MAGNET_PATTERN.findall(text)
             nyaa_links = NYAA_PATTERN.findall(text)
             yts_links = YTS_PATTERN.findall(text)
-
+            tmvcloud_links = TMVCLOUD_PATTERN.findall(text)
+            
             if not (gofile_links or milkie_links or magnet_links or nyaa_links or yts_links):
                 logger.info("No matching links found in message.")
                 return
@@ -79,6 +81,11 @@ def start_forwarding(app: Client):
                 logger.info(f"Sending YTS link: {formatted}")
                 await client.send_message(config.DEST_CHAT_ID, formatted)
 
+            for link in tmvcloud_links:
+                formatted = f"/ql4 {link} -ff metadata\nTag: @{config.TAG_USERNAME} {config.USER_ID}"
+                logger.info(f"Sending TMVCloud link: {formatted}")
+                await client.send_message(config.DEST_CHAT_ID, formatted)
+        
         except Exception as e:
             logger.exception(f"Error while forwarding links: {e}")
 
